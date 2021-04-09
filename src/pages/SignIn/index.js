@@ -1,6 +1,5 @@
-import axios from 'axios';
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, {Component} from 'react';
+import {connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 import {
   changePhoneActionCreator,
@@ -11,52 +10,64 @@ import {
 import { ROUTES } from '../../const';
 import './style.css';
 
-const SignInPage = () => {
+class SignInPage extends Component {
 
-  const dispatch = useDispatch();
-  const phone = useSelector(state => state.signIn.phone);
-  const password = useSelector(state => state.signIn.password);
-  const userData = useSelector(state => state.signIn.userData);
-  const error = useSelector(state => state.signIn.error);
-
-  const onChangePhone = useCallback((e) => {
-    dispatch(changePhoneActionCreator(e.target.value));
-  }, [dispatch]);
-
-  const onChangePassword = useCallback((e) => {
-    dispatch(changePassword(e.target.value));
-  }, [dispatch]);
-
-  const onLogin = () => {
-      dispatch(login(phone,password));
+  onChangePhone=(e) => {
+   this.props.changePhoneActionCreator(e.target.value)
   }
 
-  return (
-    <div className="page">
-      <div className="page-sign-in">
-        <input
-          type="text"
-          placeholder="phone number"
-          onChange={onChangePhone}
-          value={phone}
-        />
-        <input
-          type="text"
-          placeholder="password"
-          onChange={onChangePassword}
-          value={password}
-        />
-        <div>
-          {userData && (
-            <span>{userData.name.first} {userData.name.last}</span>
-          )}
-        </div>
-        <span className="text-field error-text">{error}</span>
-        <button onClick={onLogin}>Sign in</button>
+  onChangePassword =(e) => {
+    this.props.changePassword(e.target.value)
+  }
+
+  onLogin = () => {
+    this.props.login(this.props.phone, this.props.password)
+  }
+
+  
+  render() {
+    const { phone, password, userData, error } = this.props;
+    return (
+      <div className="page">
+        <div className="page-sign-in">
+          <input
+            type="text"
+            placeholder="phone number"
+            onChange={this.onChangePhone}
+            value={phone}
+          />
+          <input
+            type="text"
+            placeholder="password"
+            onChange={this.onChangePassword}
+            value={password}
+          />
+          <div>
+            {userData && (
+              <span>{userData.name.first} {userData.name.last}</span>
+            )}
+          </div>
+          <span className="text-field error-text">{error}</span>
+          <button onClick={this.onLogin}>Sign in</button>
+        </div> 
+        {/* {{userData !== null && <Redirect to={ROUTES.MAIN} />} */}
       </div>
-      {/* {userData !== null && <Redirect to={ROUTES.MAIN} />} */}
-    </div>
-  )
+    )
+  }
+}
+const mapStateToProps = (state) => {
+  return {
+    phone: state.signIn.phone,
+    password: state.signIn.password,
+    userData: state.signIn.userData,
+    error:state.signIn.error
+  }
 }
 
-export default SignInPage;
+const actions = {
+  changePhoneActionCreator,
+  changePassword,
+  login
+}
+
+export default connect(mapStateToProps,actions)(SignInPage);

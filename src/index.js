@@ -10,10 +10,18 @@ import './index.css';
 import Navigator from './navigation';
 import reducer from './reducers';
 
+const composeEnhancers =
+  typeof window === 'object' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?   
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({}) : compose;
+
+const enhancer = composeEnhancers(
+  applyMiddleware(thunk),
+);
+
 const store = createStore(
   reducer,
-  applyMiddleware(thunk, reduxLogger)
-  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+  enhancer
 );
 //const store = createStore(reducer, applyMiddleware(thunk, reduxLogger));
 console.log(store.getState());
